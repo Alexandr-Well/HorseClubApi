@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    command: ["/app/docker/app.sh"]
+    container_name: horse_club_backend
+    volumes:
+      - .:/app
+    ports:
+      - 8000:8000
+    depends_on:
+    - db
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine
+    container_name: horse_club_db
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - .prod_env
+    environment:
+      - API_REDIS_HOST=redis
+    ports:
+       - 5432:5432
+    restart: unless-stopped
+
+  redis:
+    container_name: redis
+    image: redis
+    restart: unless-stopped
+    command: >
+      --include /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - 6379:6379
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+  celery:
+    build: .
+    command: celery -A src.tasks.tasks:celery worker -l info
+    environment:
+      - API_REDIS_HOST=redis
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - db
+
+  flower:
+    build: .
+    command: celery -A src.tasks.tasks:celery flower
+    volumes:
+      - .:/app
+    ports:
+      - 5555:5555
+    depends_on:
+      - redis
+      - db
+    environment:
+      - API_REDIS_HOST=redis
+volumes:
+  postgres_data:
