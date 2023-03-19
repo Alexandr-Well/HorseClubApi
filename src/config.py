@@ -12,5 +12,7 @@ DB_HOST = os.environ.get('DB_HOST')
 
 SMTP_USER = str(os.environ.get("SMTP_USER"))
 SMTP_PASSWORD = str(os.environ.get("SMTP_PASSWORD"))
+SMTP_HOST = str(os.environ.get("SMTP_HOST"))
+SMTP_PORT = os.environ.get("SMTP_PORT")
 
 SECRET_AUTH = os.environ.get("SECRET_AUTH")

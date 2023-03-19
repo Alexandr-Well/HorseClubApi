@@ -39,9 +39,20 @@ services:
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-  celery:
+  worker1:
     build: .
-    command: celery -A src.tasks.tasks:celery worker -l info
+    command: ["/app/docker/celery.sh", "worker"]
+    environment:
+      - API_REDIS_HOST=redis
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - db
+
+  worker2:
+    build: .
+    command: ["/app/docker/celery.sh", "worker"]
     environment:
       - API_REDIS_HOST=redis
     volumes:
@@ -52,7 +63,7 @@ services:
 
   flower:
     build: .
-    command: celery -A src.tasks.tasks:celery flower
+    command: ["/app/docker/celery.sh", "flower"]
     volumes:
       - .:/app
     ports:

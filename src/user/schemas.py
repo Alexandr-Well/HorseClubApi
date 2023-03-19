@@ -7,6 +7,7 @@ class OneUser(BaseModel):
     email: str
     username: str
 
+
     class Config:
         orm_mode = True
 
