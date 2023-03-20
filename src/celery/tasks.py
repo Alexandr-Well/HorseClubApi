@@ -13,7 +13,6 @@ def get_email_template(user_email: str, subject: str, text: str, subtype: str):
     email['Subject'] = subject
     email['From'] = SMTP_USER
     email['To'] = user_email
-
     email.set_content(text, subtype=subtype)
     return email
 
