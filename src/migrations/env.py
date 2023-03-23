@@ -6,6 +6,7 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 sys.path.append(os.path.join(sys.path[0], 'src'))
 from auth.models import *
+from horse.models import *
 from alembic import context
 from config import DB_HOST, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_SERVER, POSTGRES_PORT, POSTGRES_DB
 from database import Base

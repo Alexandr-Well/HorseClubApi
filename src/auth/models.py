@@ -1,10 +1,7 @@
 from datetime import datetime
-
 from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTable
-from sqlalchemy import (JSON, TIMESTAMP, Boolean, Column, ForeignKey, Integer,
-                        String, Table)
+from sqlalchemy import (JSON, TIMESTAMP, Boolean, Column, ForeignKey, Integer, String)
 from sqlalchemy.orm import mapped_column
-
 from database import Base
 
 

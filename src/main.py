@@ -7,6 +7,7 @@ from redis import asyncio as aioredis
 # routers
 from src.user.router import router as router_users
 from src.auth.router import router as auth_router
+from src.horse.router import router as horse_router
 
 app = FastAPI(
     title='horse_club_backend'
@@ -14,6 +15,7 @@ app = FastAPI(
 
 app.include_router(auth_router)
 app.include_router(router_users)
+app.include_router(horse_router)
 
 origins = [
     "http://localhost:3000",
