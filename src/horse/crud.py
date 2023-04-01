@@ -8,7 +8,7 @@ from src.horse.schemas import HorseMain, HorseUpdate, HorseRead, HorsePhotoRead
 
 
 async def get_horses(db: AsyncSession = Depends(get_async_session), offset: int = 0, limit: int = 10):
-    query = select(Horse).join(HorsePhoto).options(contains_eager(Horse.photo, HorsePhoto.horse)) \
+    query = select(Horse).outerjoin(HorsePhoto).options(contains_eager(Horse.photo, HorsePhoto.horse)) \
         .order_by(Horse.id.asc()).offset(offset).limit(offset + limit)
     result = await db.execute(query)
     result = tuple(map(lambda x: x[0], result.unique().fetchall()))

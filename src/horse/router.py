@@ -58,7 +58,7 @@ async def remove_horse(horse_id: int, session: AsyncSession = Depends(get_async_
 
 
 @router.patch("/horse", status_code=200, dependencies=[Depends(current_superuser)], response_model=HorseUpdate)
-async def remove_horse(horse_id: int, horse: HorseUpdate, session: AsyncSession = Depends(get_async_session)):
+async def update_horse(horse_id: int, horse: HorseUpdate, session: AsyncSession = Depends(get_async_session)):
     try:
         horse = await crud.update_horse(horse_id=horse_id, db=session, horse=horse)
         return HorseRead(**horse.__dict__).dict()
