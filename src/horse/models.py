@@ -16,8 +16,7 @@ class Horse(Base):
     color = Column(String, nullable=True)
     age = Column(Integer, nullable=True)
     registered_at = Column(TIMESTAMP, default=datetime.utcnow)
-    photo: Mapped[Optional[List["HorsePhoto"]]] = relationship(back_populates="horse")
-    # photo_id: Mapped[Optional[List["HorsePhoto"]]] = relationship(back_populates="horse")
+    photo: Mapped[Optional[List["HorsePhoto"]]] = relationship(back_populates="horse", cascade='all,delete',)
 
 
 class HorsePhoto(Base):
@@ -28,7 +27,7 @@ class HorsePhoto(Base):
     id = Column(Integer, primary_key=True)
     path = Column(String, nullable=False)
     horse_id: Mapped[int] = mapped_column(ForeignKey("horse.id"))
-    horse: Mapped["Horse"] = relationship(back_populates="photo")
+    horse: Mapped["Horse"] = relationship(back_populates="photo",)
 
     def _model_as_dict(self):
         return self.__dict__
