@@ -1,11 +1,13 @@
-from typing import List
+from typing import List, Dict, Union
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi_cache.decorator import cache
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.auth.router import fastapi_users
 from src.database import get_async_session
+from src.helpers.models_helper import count_model_obj
 from src.horse import crud
 from src.horse.schemas import HorseRead, HorseMain, HorseUpdate
+from src.horse.models import Horse
 
 current_user = fastapi_users.current_user()
 current_superuser = fastapi_users.current_user(active=True, superuser=True)
@@ -16,11 +18,18 @@ router = APIRouter(
 )
 
 
-@router.get("/", status_code=200, response_model=List[HorseRead])
+@router.get("/", status_code=200, response_model=Dict[str, Union[List[HorseRead], int]])
 @cache(expire=10)
 async def get_all_horses(session: AsyncSession = Depends(get_async_session), offset: int = 0, limit: int = 10):
+
     try:
-        return await crud.get_horses(db=session, offset=offset, limit=limit)
+        count_model = await count_model_obj(Horse, db=session)
+        payload = await crud.get_horses(db=session, offset=offset, limit=limit)
+        return {
+            "status": 200,
+            "data": payload,
+            "total_objects": count_model
+        }
     except Exception as err:
         raise HTTPException(status_code=500, detail={
             "status": "error",
