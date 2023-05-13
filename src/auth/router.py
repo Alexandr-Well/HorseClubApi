@@ -26,7 +26,7 @@ router.include_router(
 
 router.include_router(
     fastapi_users.get_verify_router(UserRead),
-    prefix="/auth",
+    prefix="",
     tags=["auth"],
 )
 

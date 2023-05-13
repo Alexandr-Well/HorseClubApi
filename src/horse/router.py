@@ -18,10 +18,9 @@ router = APIRouter(
 )
 
 
-@router.get("/", status_code=200, response_model=Dict[str, Union[List[HorseRead], int]])
+@router.get("/all", status_code=200, response_model=Dict[str, Union[List[HorseRead], int]])
 @cache(expire=10)
 async def get_all_horses(session: AsyncSession = Depends(get_async_session), offset: int = 0, limit: int = 10):
-
     try:
         count_model = await count_model_obj(Horse, db=session)
         payload = await crud.get_horses(db=session, offset=offset, limit=limit)
@@ -38,8 +37,22 @@ async def get_all_horses(session: AsyncSession = Depends(get_async_session), off
         })
 
 
-@router.post("/horse", status_code=200, dependencies=[Depends(current_superuser)])
-async def create_horse_service(horse: HorseMain, session: AsyncSession = Depends(get_async_session)):
+@router.get("/", status_code=200, response_model=HorseRead)
+async def get_horse(horse_id: int, session: AsyncSession = Depends(get_async_session)):
+    try:
+        horse = await crud.get_horse_by_id(horse_id=horse_id, db=session)
+        return HorseRead(**horse.__dict__).dict()
+
+    except Exception as err:
+        raise HTTPException(status_code=500, detail={
+            "status": "error",
+            "data": None,
+            "details": str(err)
+        })
+
+
+@router.post("/", status_code=200, dependencies=[Depends(current_superuser)])
+async def create_horse(horse: HorseMain, session: AsyncSession = Depends(get_async_session)):
     try:
         horse = await crud.create_horse(horse=horse, db=session)
         return HorseRead(**horse.__dict__).dict()
@@ -51,7 +64,7 @@ async def create_horse_service(horse: HorseMain, session: AsyncSession = Depends
         })
 
 
-@router.delete("/horse", status_code=200, dependencies=[Depends(current_superuser)])
+@router.delete("/", status_code=200, dependencies=[Depends(current_superuser)])
 async def remove_horse(horse_id: int, session: AsyncSession = Depends(get_async_session)):
     try:
         await crud.remove_horse(horse_id=horse_id, db=session)
@@ -66,7 +79,7 @@ async def remove_horse(horse_id: int, session: AsyncSession = Depends(get_async_
         })
 
 
-@router.patch("/horse", status_code=200, dependencies=[Depends(current_superuser)], response_model=HorseUpdate)
+@router.patch("/", status_code=200, dependencies=[Depends(current_superuser)], response_model=HorseUpdate)
 async def update_horse(horse_id: int, horse: HorseUpdate, session: AsyncSession = Depends(get_async_session)):
     try:
         horse = await crud.update_horse(horse_id=horse_id, db=session, horse=horse)
